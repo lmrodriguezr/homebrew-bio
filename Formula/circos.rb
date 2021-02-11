@@ -2,20 +2,21 @@ class Circos < Formula
   # cite Krzywinski_2009: "https://doi.org/10.1101/gr.092759.109"
   desc "Visualize data in a circular layout"
   homepage "http://circos.ca"
-  url "http://circos.ca/distribution/circos-0.69-6.tgz"
-  sha256 "52d29bfd294992199f738a8d546a49754b0125319a1685a28daca71348291566"
+  url "http://circos.ca/distribution/circos-0.69-9.tgz"
+  sha256 "34d8d7ebebf3f553d62820f8f4a0a57814b610341f836b4740c46c3057f789d2"
+  license "GPL-3.0"
 
   bottle do
     root_url "https://linuxbrew.bintray.com/bottles-bio"
-    cellar :any_skip_relocation
-    sha256 "1a567112e181dd4a2b3e46e020abbf0c8578e67755037a7cfa31f16bde4a68be" => :sierra_or_later
-    sha256 "f6b49b6e6193b2766733448459a2a33481680fbaf0f4d6af4d5c94ac9bd36755" => :x86_64_linux
+    sha256 cellar: :any, sierra:       "8ec9ce8fecc82d9e246675d79b172465eed074547d71ff8f85fc3f9e442b0bfe"
+    sha256 cellar: :any, x86_64_linux: "5e67e2246fe7e5135f6ccd0f6f51c1eb2e2ee1bbd9986979889881d7c7b33107"
   end
 
   depends_on "cpanminus" => :build
   depends_on "pkg-config" => :build
   depends_on "gd"
-  depends_on "perl" unless OS.mac?
+
+  uses_from_macos "perl"
 
   def install
     rm "bin/circos.exe"
@@ -31,7 +32,7 @@ class Circos < Formula
       "Math::VecStat", "Number::Format", "Readonly", "SVG", "Set::IntSpan",
       "Statistics::Basic", "Text::Format"
 
-    (bin/"circos").write_env_script("#{libexec}/bin/circos", :PERL5LIB => ENV["PERL5LIB"])
+    (bin/"circos").write_env_script("#{libexec}/bin/circos", PERL5LIB: ENV["PERL5LIB"])
   end
 
   test do

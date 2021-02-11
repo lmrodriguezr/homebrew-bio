@@ -1,21 +1,18 @@
 class Transdecoder < Formula
   desc "Identifies candidate coding regions within transcript sequences"
   homepage "https://transdecoder.github.io/"
-  url "https://github.com/TransDecoder/TransDecoder/archive/TransDecoder-v5.0.2.tar.gz"
-  sha256 "c3946c07ae21857e5a35d76083b21e925b43bba2dee02db14d31b65942302298"
+  url "https://github.com/TransDecoder/TransDecoder/archive/TransDecoder-v5.5.0.tar.gz"
+  sha256 "c800d9226350817471e9f51267c91f7cab99dbc9b26c980527fc1019e7d90a76"
   head "https://github.com/TransDecoder/TransDecoder.git"
 
   bottle do
     root_url "https://linuxbrew.bintray.com/bottles-bio"
-    cellar :any_skip_relocation
-    sha256 "17f2e7de9352f9735ea93b9bdb6da49c9ec869010678cf3a5e178b661c19cf94" => :sierra_or_later
-    sha256 "67ce07e6e66232ca8a8543867f137f3b1f5a5c5a0fe3d9b7613907e86460250d" => :x86_64_linux
+    sha256 cellar: :any_skip_relocation, sierra:       "e042f955488ce81913380ae2090db14f5384ed90e2c9c823b31ff2a92f50feac"
+    sha256 cellar: :any_skip_relocation, x86_64_linux: "13f7d49edfe061c813960bbb59a7c7c27f6eac82a9c058b34bf1d1f52d095c06"
   end
 
-  unless OS.mac?
-    depends_on "cpanminus" => :build
-    depends_on "perl"
-  end
+  depends_on "cpanminus" => :build unless OS.mac?
+  uses_from_macos "perl"
 
   def install
     system "make"
@@ -30,13 +27,13 @@ class Transdecoder < Formula
       ENV["PERL5LIB"] = libexec/"lib/perl5"
       system "cpanm", "--self-contained", "-l", libexec, "URI::Escape"
       executables.each do |executable|
-        (bin/executable).write_env_script(prefix/executable, :PERL5LIB => ENV["PERL5LIB"])
+        (bin/executable).write_env_script(prefix/executable, PERL5LIB: ENV["PERL5LIB"])
       end
     end
   end
 
   test do
-    assert_match "USAGE", shell_output("#{bin}/TransDecoder.LongOrfs 2>&1", 1)
-    assert_match "USAGE", shell_output("#{bin}/TransDecoder.Predict 2>&1", 1)
+    assert_match "Transdecoder", shell_output("#{bin}/TransDecoder.LongOrfs 2>&1", 255)
+    assert_match "Transdecoder", shell_output("#{bin}/TransDecoder.Predict 2>&1", 255)
   end
 end

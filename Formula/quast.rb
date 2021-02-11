@@ -1,26 +1,33 @@
 class Quast < Formula
-  # cite Gurevich_2013: "https://doi.org/10.1093/bioinformatics/btt086", "https://doi.org/10.1093/bioinformatics/btv697", "https://doi.org/10.1093/bioinformatics/btw379"
-  desc "QUAST: Quality Assessment Tool for Genome Assemblies"
-  homepage "http://cab.spbu.ru/software/quast/"
-  url "https://downloads.sourceforge.net/project/quast/quast-4.6.3.tar.gz"
-  sha256 "c00ef637282207dcad05de9503c704bc6cc69eea4fb52f7802fd8566afa31c4e"
+  # cite Gurevich_2013: "https://doi.org/10.1093/bioinformatics/btt086"
+  # cite Mikheenko_2015: "https://doi.org/10.1093/bioinformatics/btv697"
+  # cite Mikheenko_2016: "https://doi.org/10.1093/bioinformatics/btw379"
+  # cite Mikheenko_2018: "https://doi.org/10.1093/bioinformatics/bty266"
+  desc "Quality Assessment Tool for Genome Assemblies"
+  homepage "https://quast.sourceforge.io/"
+  url "https://downloads.sourceforge.net/project/quast/quast-5.0.2.tar.gz"
+  sha256 "cdb8f83e20cc38f218ff7172b454280fcb1c7e2dff74e1f8618cacc53d46b48e"
+  head "https://github.com/ablab/quast.git"
 
   bottle do
     root_url "https://linuxbrew.bintray.com/bottles-bio"
-    sha256 "101ecf5624406959757f074218ba95ebc16a226b852f68832b0da29e0b303779" => :sierra_or_later
-    sha256 "ce3487e38818178541943c3961139339cbfb6f785ffb744a0eddef8d28aabd90" => :x86_64_linux
+    sha256 cellar: :any_skip_relocation, sierra:       "96cbef2a8207cb7e5335482f745ef619ceca992729d3ad853495bb2e396700d2"
+    sha256 cellar: :any_skip_relocation, x86_64_linux: "8a091a5df4a4895c1c3de153adaeb27473d72c6693855214bc648a9f3a3bff59"
   end
 
-  depends_on "e-mem"
-  depends_on "matplotlib"
+  depends_on "python"
+
+  uses_from_macos "zlib"
 
   def install
-    # removing precompiled E-MEM binary causing troubles with brew audit
-    rm "quast_libs/MUMmer/e-mem-osx"
     prefix.install Dir["*"]
-    bin.install_symlink "../quast.py", "../metaquast.py",
-      "quast.py" => "quast", "metaquast.py" => "metaquast"
-    # Compile MUMmer, so that `brew test quast` does not fail.
+    bin.install_symlink "../quast.py", "../metaquast.py", "../quast-lg.py", "../icarus.py",
+      "quast.py" => "quast", "metaquast.py" => "metaquast", "quast-lg.py" => "quast-lg", "icarus.py" => "icarus"
+    inreplace "#{bin}/../quast.py", "#!/usr/bin/env python", "#!/usr/bin/env python3"
+    inreplace "#{bin}/../metaquast.py", "#!/usr/bin/env python", "#!/usr/bin/env python3"
+    inreplace "#{bin}/../icarus.py", "#!/usr/bin/env python", "#!/usr/bin/env python3"
+
+    # Compile the bundled aligner so that `brew test quast` does not fail.
     system "#{bin}/quast", "--test"
   end
 

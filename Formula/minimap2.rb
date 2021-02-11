@@ -1,28 +1,37 @@
 class Minimap2 < Formula
-  # cite Li_2018: "https://arxiv.org/abs/1708.01492"
+  # cite Li_2018: "https://doi.org/10.1093/bioinformatics/bty191"
   desc "Fast pairwise aligner for genomic and spliced nucleotide sequences"
   homepage "https://github.com/lh3/minimap2"
-  url "https://github.com/lh3/minimap2/releases/download/v2.9/minimap2-2.9.tar.bz2"
-  sha256 "b6d527cb947506e504bd1b7c71bf6cabf6a7466e69d33752986acaa4ac8d3ff5"
+  url "https://github.com/lh3/minimap2/releases/download/v2.17/minimap2-2.17.tar.bz2"
+  sha256 "b68ac8882d33cc63e9e3246775062aeb159b6990ff7f38099172c3fe6f8a2742"
   head "https://github.com/lh3/minimap2.git"
+
+  livecheck do
+    url :stable
+    strategy :github_latest
+  end
 
   bottle do
     root_url "https://linuxbrew.bintray.com/bottles-bio"
-    cellar :any_skip_relocation
-    sha256 "011e0932718cd703c25e0dc7eb1d8981adcfb5073ebc7ab0a1dde699b926ca45" => :sierra_or_later
-    sha256 "3014285111827c16f6954aa58bcbbc1e053449a1760989cb3af182f68e49c0f0" => :x86_64_linux
+    sha256 cellar: :any_skip_relocation, sierra:       "cf78c0b192a7766dcebc18df96ef90492af999dae1903bcdbf360c150936abda"
+    sha256 cellar: :any_skip_relocation, x86_64_linux: "8db660e19fb613e93dbcf0ebfecd4b7741bb349906e00e0a7aa73009809e806b"
   end
 
-  depends_on "zlib" unless OS.mac?
+  depends_on "brewsci/bio/k8" # for paftools.js
+
+  uses_from_macos "zlib"
 
   def install
     system "make"
     bin.install "minimap2"
+    bin.install "misc/paftools.js"
+    bin.install_symlink "paftools.js" => "paftools"
     man1.install "minimap2.1"
-    pkgshare.install "python", "test"
+    pkgshare.install "python", "test", "misc"
   end
 
   test do
-    assert_match "Usage", shell_output("#{bin}/minimap2 --help 2>&1")
+    assert_match version.to_s, shell_output("#{bin}/minimap2 --version 2>&1")
+    assert_match /\d/, shell_output("#{bin}/paftools version 2>&1")
   end
 end

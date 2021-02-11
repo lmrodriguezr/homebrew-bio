@@ -2,25 +2,25 @@ class Mash < Formula
   # cite Ondov_2016: "https://doi.org/10.1186/s13059-016-0997-x"
   desc "Fast genome distance estimation using MinHash"
   homepage "https://github.com/marbl/Mash"
-  url "https://github.com/marbl/Mash/archive/v2.0.tar.gz"
-  sha256 "7bea8cd3c266640bbd97f2e1c9d0168892915c1c14f7d03a9751bf7a3709dd01"
-  revision 1
+  url "https://github.com/marbl/Mash/archive/v2.2.2.tar.gz"
+  sha256 "e4c2d702fd0254f689256b2d8f7d3cc3a68db3ea45b60f0a662ce926a4f5fc22"
   head "https://github.com/marbl/Mash.git"
 
   bottle do
     root_url "https://linuxbrew.bintray.com/bottles-bio"
-    cellar :any
-    sha256 "cfbc688abc97975c8f79accc32ea1ab9a68cd612b758223f91078aa4db0140ca" => :sierra_or_later
-    sha256 "554f45f0a0d3eab1eb119dd510039e1f85c64e0581de8de625ab5ced35d5596b" => :x86_64_linux
+    sha256 cellar: :any_skip_relocation, mojave:       "ceded4203723c07f1468254f7f1281031bfd8163e948fb1b165659064f7ef5a6"
+    sha256 cellar: :any_skip_relocation, x86_64_linux: "4d75b04ef71f547af960aab06fe485dd53dd830695508fb0f2f33e1cfd5461b9"
   end
-
-  needs :cxx11
 
   depends_on "autoconf" => :build
   depends_on "automake" => :build
+  depends_on "libtool" => :build
+  depends_on "pkg-config" => :build
+
   depends_on "capnp"
   depends_on "gsl"
-  depends_on "zlib" unless OS.mac?
+
+  uses_from_macos "zlib"
 
   def install
     system "./bootstrap.sh"
@@ -29,13 +29,16 @@ class Mash < Formula
       "--with-capnp=#{Formula["capnp"].opt_prefix}",
       "--with-gsl=#{Formula["gsl"].opt_prefix}"
     system "make"
+    system "make", "test"
+
+    # ideally we should be using "make install" here
     bin.install "mash"
     doc.install Dir["doc/sphinx/*"]
-    pkgshare.install "data"
+    pkgshare.install "data", "test"
   end
 
   test do
-    assert_match version.to_s, shell_output("#{bin}/mash -h 2>&1")
+    assert_match version.to_s, shell_output("#{bin}/mash --version 2>&1")
     system bin/"mash", "sketch", "-o", "test", pkgshare/"data/genome1.fna"
     File.exist?("test.msh")
     assert_match "Sketches:", shell_output("#{bin}/mash info test.msh")

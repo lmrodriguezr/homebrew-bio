@@ -1,33 +1,33 @@
 class Minia < Formula
   # cite Chikhi_2013: "https://doi.org/10.1186/1748-7188-8-22"
-  desc "Short-read assembler of a Bloom filter de Bruijn graph"
+  desc "Short-read assembler based on a de Bruijn graph"
   homepage "http://minia.genouest.org/"
-  url "https://github.com/GATB/minia/releases/download/v2.0.7/minia-v2.0.7-Source.tar.gz"
-  sha256 "76d96dc14b8c4c01e081da6359c3a8236edafc5ef93b288eaf25f324de65f3ce"
+  url "https://github.com/GATB/minia/releases/download/v3.2.1/minia-v3.2.1-Source.tar.gz"
+  sha256 "c431915f034bc58887f9a14f6f65be2c83e0faae312ef330c3a11c6ba131162c"
+  license "AGPL-3.0"
 
   bottle do
     root_url "https://linuxbrew.bintray.com/bottles-bio"
-    sha256 "4183bbc45311722a4cfecf65b62c107f75bb16dc2405432e5d60083e1334a55c" => :sierra_or_later
-    sha256 "72e47109b9109726481d75da6353e243f4b413e1ad4d7377723a0c346f147447" => :x86_64_linux
+    sha256 cellar: :any_skip_relocation, sierra:       "0aa4268b6671d25ab642c61e5c848708c65385f28424096a2c16e8a25e1882c5"
+    sha256 cellar: :any_skip_relocation, x86_64_linux: "987ae35c73a400c072f82b5e801fc660eb14c5c9c25ac3b82f5df6c7614c2ce7"
   end
 
   depends_on "cmake" => :build
-  depends_on "zlib" unless OS.mac?
+
+  uses_from_macos "zlib"
 
   def install
     mkdir "build" do
-      # Reduce memory usage for CircleCI.
-      ENV["MAKEFLAGS"] = "-j8" if ENV["CIRCLECI"]
       args = std_cmake_args
-      # Fix error: 'hdf5/hdf5.h' file not found
-      args.delete "-DCMAKE_BUILD_TYPE=Release"
       args << "-DSKIP_DOC=1"
       system "cmake", "..", *args
       system "make"
       system "make", "install"
-      # Resolve conflict with hdf5: https://github.com/GATB/minia/issues/5
-      mv bin/"h5dump", bin/"minia-h5dump"
     end
+    # Installing non-libraries to "lib" is discouraged.
+    rm lib/"libhdf5.settings"
+    # remove test folder as 250MB is too big for bottles
+    rm_r prefix/"test"
   end
 
   test do

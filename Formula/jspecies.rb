@@ -7,14 +7,12 @@ class Jspecies < Formula
 
   bottle do
     root_url "https://linuxbrew.bintray.com/bottles-bio"
-    cellar :any_skip_relocation
-    sha256 "fdad5b757d32a71e196a65e6b241d30472e55c16634e0f7e777f840817bc8cc9" => :sierra_or_later
+    sha256 cellar: :any_skip_relocation, sierra: "fdad5b757d32a71e196a65e6b241d30472e55c16634e0f7e777f840817bc8cc9"
   end
 
-  depends_on :java
-
-  depends_on "blast-legacy"
-  depends_on "mummer"
+  depends_on "brewsci/bio/blast-legacy"
+  depends_on "brewsci/bio/mummer"
+  depends_on "openjdk"
 
   def install
     jar = "jspecies#{version}.jar"
@@ -24,5 +22,6 @@ class Jspecies < Formula
 
   test do
     # No test because this is a GUI
+    nil
   end
 end

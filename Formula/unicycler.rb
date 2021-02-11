@@ -2,24 +2,23 @@ class Unicycler < Formula
   # cite Wick_2017: "https://doi.org/10.1371/journal.pcbi.1005595"
   desc "Hybrid assembly pipeline for bacterial genomes"
   homepage "https://github.com/rrwick/Unicycler"
-  url "https://github.com/rrwick/Unicycler/archive/v0.4.4.tar.gz"
-  sha256 "e25e7423119aec5e574324c403f8ae36d93c0ce1497853d42c1a49a2a924a1f4"
-  head "https://github.com/rrwick/Unicycler/releases"
+  url "https://github.com/rrwick/Unicycler/archive/v0.4.7.tar.gz"
+  sha256 "a8cf65e46dc2694b0fbd4e9190c73a1f300921457aadfab27a1792b785620d63"
+  license "GPL-3.0"
+  revision 1
+  head "https://github.com/rrwick/Unicycler.git"
 
   bottle do
     root_url "https://linuxbrew.bintray.com/bottles-bio"
-    cellar :any_skip_relocation
-    sha256 "4cac1f0f8dcaec6ec921ddb3ca78f41f2a93e39103eee4f00838d301ea3ceb08" => :sierra_or_later
-    sha256 "58549e200c6d2eb13ff70a2d43138a0a9fa353dae388f95f43572681d991bae5" => :x86_64_linux
+    sha256 cellar: :any, catalina:     "1100ca4a35cdef3a0c7b232d8e8418ee416ef74095b8fc28f8a4fccc6e4ab7ed"
+    sha256 cellar: :any, x86_64_linux: "870cda34ffc8986c8bdb1b24707da593b6ffa0675627b73db644d0c13f999b66"
   end
-
-  needs :cxx14
 
   depends_on "blast"
   depends_on "bowtie2"
-  depends_on "pilon"
-  depends_on "python"
-  depends_on "racon"
+  depends_on "brewsci/bio/pilon"
+  depends_on "brewsci/bio/racon"
+  depends_on "python@3.8"
   depends_on "samtools"
   depends_on "spades"
 

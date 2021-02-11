@@ -2,14 +2,12 @@ class Meme < Formula
   # cite Bailey_2009: "https://doi.org/10.1093/nar/gkp335"
   desc "Tools for motif discovery"
   homepage "http://meme-suite.org"
-  url "http://meme-suite.org/meme-software/4.11.2/meme_4.11.2_2.tar.gz"
-  version "4.11.2.2"
-  sha256 "377238c2a9dda64e01ffae8ecdbc1492c100df9b0f84132d50c1cf2f68921b22"
-  revision 3
+  url "http://meme-suite.org/meme-software/5.1.0/meme-5.1.0.tar.gz"
+  sha256 "46b527cb0eebb6ca21976dcd87aae8a4dd9cf55756679c692fc99bae895d36c9"
 
   bottle do
     root_url "https://linuxbrew.bintray.com/bottles-bio"
-    sha256 "81803b3e1fd878c908f91f2f04e85e5916a3766487b54ce545a8d861c88f0c86" => :x86_64_linux
+    sha256 x86_64_linux: "b66235d3ce6851c700bc395dff15f2346234b6e84d750dd9d4d92945a999e01a"
   end
 
   # Work around the error:
@@ -24,8 +22,12 @@ class Meme < Formula
   end
 
   def install
-    ENV.deparallelize
-    system "./configure", "--disable-debug", "--disable-dependency-tracking", "--prefix=#{libexec}"
+    system "./configure",
+      "--disable-dependency-tracking",
+      "--prefix=#{libexec}",
+      "--with-url=http://meme-suite.org/",
+      "--enable-build-libxml2",
+      "--enable-build-libxslt"
     system "make", "install"
     prefix.install "tests"
     perl_files = `grep -l -w "#!/usr/bin/perl" #{bin}/*`.split("\n")
@@ -38,7 +40,7 @@ class Meme < Formula
     else
       ENV["PERL5LIB"] = libexec/"lib/perl5"
       system "cpanm", "--self-contained", "-l", libexec, "XML::Parser::Expat"
-      (bin/"meme").write_env_script(libexec/"bin/meme", :PERL5LIB => ENV["PERL5LIB"])
+      (bin/"meme").write_env_script(libexec/"bin/meme", PERL5LIB: ENV["PERL5LIB"])
     end
   end
 

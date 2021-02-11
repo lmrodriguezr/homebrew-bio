@@ -1,21 +1,30 @@
 class Gfakluge < Formula
+  # cite Dawson_2019: "https://doi.org/10.21105/joss.01083"
   desc "C++ library and utilities for Graphical Fragment Assembly (GFA)"
   homepage "https://github.com/edawson/gfakluge"
-  url "https://github.com/edawson/gfakluge/archive/0.1.0.tar.gz"
-  sha256 "a5cc74a5733b2e17cc5819749c1a6a696620e5bc247663231112199bc891bc1e"
+  url "https://github.com/edawson/gfakluge/archive/1.1.2.tar.gz"
+  sha256 "4b9e2d358d87a8a0b8508b6ae076af7657f8bb5c823a73f912917c5689f72121"
+  license "MIT"
+  head "https://github.com/edawson/gfakluge.git"
 
   bottle do
     root_url "https://linuxbrew.bintray.com/bottles-bio"
-    cellar :any_skip_relocation
-    sha256 "213958aa6c3d4059a23ff1a24ebd10ee5a3e2f8b9f44ef1befe7544f046eecf8" => :sierra_or_later
-    sha256 "71cc2877ce102e0ad35532458aaaaf34ffb93857999e7d0802681bfaaa04e3a1" => :x86_64_linux
+    sha256 cellar: :any, catalina:     "977ebe86eb2dfe0ae4ee25fdfaaf65dd3f14f2c194f940ecf0c2b4d6268d23e7"
+    sha256 cellar: :any, x86_64_linux: "109b9d58544ef9e80d7a49a4067e5ff8ae04d79e2d35abeade3c82f83f2446ef"
   end
 
+  depends_on "gcc" if OS.mac? # needs openmp
+
+  uses_from_macos "zlib"
+
+  fails_with :clang # needs openmp
+
   def install
+    inreplace "Makefile", "  mkdir -p $(DESTDIR)$(PREFIX)/bin", "\tmkdir -p $(DESTDIR)$(PREFIX)/bin"
     system "make"
-    include.install "src/gfakluge.hpp"
-    lib.install "libgfakluge.a"
-    bin.install %w[gfa_diff gfa_ids gfa_merge gfa_sort gfa_spec_convert gfa_stats]
+    mkdir [bin, include]
+    system "make", "install", "PREFIX=#{prefix}"
+    include.install "src/tinyFA/tinyfa.hpp", "src/tinyFA/pliib.hpp"
   end
 
   test do
@@ -24,6 +33,7 @@ class Gfakluge < Formula
       S\t1\tACGTACGT\tLN:i:8
       L\t1\t+\t1\t+\t4M
     EOS
-    assert_equal "Number of nodes: 1\nNumber of edges: 1\nTotal graph length in basepairs: 8\n", shell_output("#{bin}/gfa_stats -s -i test.gfa")
+    assert_equal "Number of nodes: 1\nNumber of edges: 1\nNumber of links: 1\nNumber of containments: 0\n",
+                  shell_output("#{bin}/gfak stats -n -e test.gfa")
   end
 end

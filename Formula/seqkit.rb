@@ -1,31 +1,29 @@
 class Seqkit < Formula
-  # Shen_2016: "https://doi.org/10.1371/journal.pone.0163962"
+  # cite Shen_2016: "https://doi.org/10.1371/journal.pone.0163962"
   desc "Ultrafast FASTA/Q file manipulation"
   homepage "https://bioinf.shenwei.me/seqkit/"
   # We use binaries to avoid compiling Go code
   if OS.mac?
-    url "https://github.com/shenwei356/seqkit/releases/download/v0.7.2/seqkit_darwin_amd64.tar.gz"
-    sha256 "6b34e400e9d0437516743b18ffa57b940f2f66ca98b40f4c52562fc2a7ce50f9"
+    url "https://github.com/shenwei356/seqkit/releases/download/v0.15.0/seqkit_darwin_amd64.tar.gz"
+    sha256 "5428cf6e2d04efd0adc0fa045a3f90fd37c34235630be2819aef0de25901f12a"
   else
-    url "https://github.com/shenwei356/seqkit/releases/download/v0.7.2/seqkit_linux_amd64.tar.gz"
-    sha256 "de75151fc93ee24717370f9d54aff2f76a04be14ae2dd9384d749b060c210124"
+    url "https://github.com/shenwei356/seqkit/releases/download/v0.15.0/seqkit_linux_amd64.tar.gz"
+    sha256 "bf305e7d5b4fbe14a6e87ebf6aa454117dd3cf030cb9473d01161c0a1987a182"
   end
-  version "0.7.2"
+  version "0.15.0"
+  license "MIT"
 
   bottle do
     root_url "https://linuxbrew.bintray.com/bottles-bio"
-    cellar :any_skip_relocation
-    sha256 "7a69ce7a8b1c53858005754c4f3725262a0539166c3fcc316f2ac25f422f0363" => :sierra_or_later
-    sha256 "c17453614853dcb7bf49d94c3f395f9b4fb2c162c4667adfe0d73b0988621c82" => :x86_64_linux
+    sha256 cellar: :any_skip_relocation, catalina:     "831fc5b89602adc8cfaa943c40522a345a020d3487b5d06b89d3aaf36a9e408b"
+    sha256 cellar: :any_skip_relocation, x86_64_linux: "4f3585065b3098939f201c2b081a0539ef59ffadfa8b162f8c0b471849483296"
   end
-
-  depends_on "pigz"
 
   def install
     bin.install "seqkit"
   end
 
   test do
-    assert_match version.to_s, shell_output("#{bin}/seqkit 2>&1")
+    assert_match version.to_s, shell_output("#{bin}/seqkit version")
   end
 end

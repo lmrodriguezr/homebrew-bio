@@ -1,37 +1,45 @@
 class KentTools < Formula
   desc "Utilities for the UCSC Genome Browser"
   homepage "https://genome.ucsc.edu/"
-  url "http://hgdownload.soe.ucsc.edu/admin/exe/userApps.v361.src.tgz"
-  sha256 "4eef556e9a6191b2f7f76b1b3d01bea356ae5648e9d00e79ddc8e2a61cd37e85"
+  url "https://hgdownload.soe.ucsc.edu/admin/exe/userApps.v401.src.tgz"
+  sha256 "3608689a07a6327f5695672a804ef5f35c9d680c114b0ee947ca2a4f3b768514"
   head "git://genome-source.cse.ucsc.edu/kent.git"
+
+  livecheck do
+    url "https://hgdownload.soe.ucsc.edu/admin/exe/"
+    regex(/href=.*?userApps[._-]v?(\d+)\.src\.t/i)
+  end
 
   bottle do
     root_url "https://linuxbrew.bintray.com/bottles-bio"
-    sha256 "370a96e2fbfc23bfa6065e83fa3aa5caa006b42120f8d92f5fc010d4378d377e" => :sierra_or_later
-    sha256 "6ff00e1bef1ffd58e02bbb9ea2d02f2566be07dc5e2d9be86b31f1ee854735fa" => :x86_64_linux
+    sha256 catalina:     "8e1df6949537b6f6888f38705ff35348561815f4fe1a3b6c58e6c4d7e257c834"
+    sha256 x86_64_linux: "815c5bdf836a96b6b419dadc4fa0b1122229d4fd1147bb7d582cb8416f730567"
   end
 
   depends_on "libpng"
-  depends_on "mysql"
-  depends_on "openssl"
-  unless OS.mac?
-    depends_on "rsync"
+  depends_on "mysql@5.7"
+  depends_on "openssl@1.1"
+
+  uses_from_macos "rsync"
+  uses_from_macos "zlib"
+
+  on_linux do
     depends_on "util-linux"
-    depends_on "zlib"
   end
 
   def install
     libpng = Formula["libpng"]
-    mysql = Formula["mysql"]
+    mysql = Formula["mysql@5.7"]
 
     args = ["userApps", "BINDIR=#{bin}", "SCRIPTS=#{bin}"]
     args << "MACHTYPE=#{`uname -m`.chomp}"
     args << "PNGLIB=-L#{libpng.opt_lib} -lpng -lz"
     args << "PNGINCL=-I#{libpng.opt_include}"
     args << "MYSQLINC=#{mysql.opt_include}/mysql"
-    args << "MYSQLLIBS=-lmysqlclient -lz"
+    args << "MYSQLLIBS=-L#{mysql.opt_lib} -lmysqlclient -lz -lstdc++"
 
     cd build.head? ? "src" : "kent/src" do
+      inreplace "parasol/makefile", "DESTDIR=${HOME}/bin", ""
       system "make", *args
     end
 
@@ -43,17 +51,18 @@ class KentTools < Formula
     end
   end
 
-  def caveats; <<~EOS
-    The `calc` tool has been renamed to `kent-tools-calc`.
+  def caveats
+    <<~EOS
+      The `calc` tool has been renamed to `kent-tools-calc`.
 
-    This only installs the standalone tools located at
-      http://hgdownload.cse.ucsc.edu/admin/exe/
+      This only installs the standalone tools located at
+        http://hgdownload.cse.ucsc.edu/admin/exe/
 
-    If you need the full UCSC Genome Browser, run:
-      brew install ucsc-genome-browser
+      If you need the full UCSC Genome Browser, run:
+        brew install ucsc-genome-browser
 
-    This does not install the BLAT tools. To install BLAT:
-      brew install blat
+      This does not install the BLAT tools. To install BLAT:
+        brew install blat
     EOS
   end
 

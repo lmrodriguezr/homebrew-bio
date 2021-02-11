@@ -4,13 +4,13 @@ class Trimal < Formula
   homepage "http://trimal.cgenomics.org/"
   url "https://github.com/scapella/trimal/archive/v1.4.1.tar.gz"
   sha256 "cb8110ca24433f85c33797b930fa10fe833fa677825103d6e7f81dd7551b9b4e"
+  license "GPL-3.0"
   head "https://github.com/scapella/trimal"
 
   bottle do
     root_url "https://linuxbrew.bintray.com/bottles-bio"
-    cellar :any_skip_relocation
-    sha256 "e1796872ec4389f87131dea98c4596aa387090d4eb476f1e1472e3763bbc09ed" => :sierra_or_later
-    sha256 "e10f7b254386950ff2944caf0b1eb924d0854618485c7cb534ba5f058dc56b17" => :x86_64_linux
+    sha256 cellar: :any_skip_relocation, sierra:       "e1796872ec4389f87131dea98c4596aa387090d4eb476f1e1472e3763bbc09ed"
+    sha256 cellar: :any_skip_relocation, x86_64_linux: "e10f7b254386950ff2944caf0b1eb924d0854618485c7cb534ba5f058dc56b17"
   end
 
   def install

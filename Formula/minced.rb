@@ -1,24 +1,23 @@
 class Minced < Formula
   desc "Mining CRISPRs in Environmental Datasets"
   homepage "https://github.com/ctSkennerton/minced"
-  url "https://github.com/ctSkennerton/minced/archive/0.2.0.tar.gz"
-  sha256 "e1ca61e0307e6a2a2480bc0a1291a2c677110f34c3247d4773fdba7e95a6b573"
-  head "https://github.com/ctSkennerton/minced.git"
+  url "https://github.com/ctSkennerton/minced/archive/0.4.2.tar.gz"
+  sha256 "35b6ee22fe6bdc26a31d0203a7dcc6bd1a19fd6733c60d80ceb44431884af165"
+  license "GPL-3.0"
 
   bottle do
     root_url "https://linuxbrew.bintray.com/bottles-bio"
-    cellar :any_skip_relocation
-    sha256 "e4348c04b536cca44dfd5579c774bcc07f22bc04120386a41aff6bf123b5a56c" => :sierra_or_later
-    sha256 "25df8ae353d74b462539fe1e8d60a16a45160f2a87a95e21a40915a81f6a9382" => :x86_64_linux
+    sha256 cellar: :any_skip_relocation, catalina:     "35f37fa7307c465cb85346e04d14b60def08d5285d034b27f6b0a38452a7c6e4"
+    sha256 cellar: :any_skip_relocation, x86_64_linux: "834a142ba163149ba2436f3a5991c9b06b4c21b06a0f1b438b40d31f5910cc6a"
   end
 
-  depends_on :java => "1.8+"
+  depends_on "openjdk"
 
   def install
     system "make"
-    libexec.install "minced.jar"
-    bin.write_jar_script libexec/"minced.jar", "minced"
-    pkgshare.install Dir["t/*"]
+    jar = "minced.jar"
+    libexec.install jar
+    bin.write_jar_script libexec/jar, "minced"
   end
 
   test do
@@ -34,6 +33,6 @@ class Minced < Formula
       GTTCACTGCCGTACAGGCAGCTTAGAAACTGAACGTTGAAGAGTGCGACCGTCTCTCCTT
       GTTCACTGCCGTACAGGCAGTATTCACA
     EOS
-    assert_match "1\t507\t9", shell_output("#{bin}/minced -gff #{testpath}/test.fa")
+    assert_match "1\t508\t8", shell_output("#{bin}/minced -gff #{testpath}/test.fa")
   end
 end

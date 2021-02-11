@@ -1,15 +1,14 @@
 class Quicktree < Formula
   desc "Phylogenetic neighbor-joining tree builder"
-  homepage "https://www.sanger.ac.uk/science/tools/quicktree"
-  url "https://github.com/khowe/quicktree/archive/v2.2.tar.gz"
-  sha256 "e44d9147a81888d6bfed5e538367ecd4e5d373ae882d5eb9649e5e33f54f1bd6"
-  head "https://github.com/khowe/quicktree.git"
+  homepage "https://github.com/khowe/quicktree"
+  url "https://github.com/khowe/quicktree/archive/v2.5.tar.gz"
+  sha256 "731aa845ce3f1f0645bd0df2b54df75f78fce065d6a3ddc47fedf4bdcb11c248"
+  license "Apache-2.0"
 
   bottle do
     root_url "https://linuxbrew.bintray.com/bottles-bio"
-    cellar :any_skip_relocation
-    sha256 "078298b9503e4f0c923b4a8d07be1712e40db974f7d46e144c570bc79a392722" => :sierra_or_later
-    sha256 "9a05196897f1f10455db8756847927679710b344ecdd525f0f8780dee16a3e02" => :x86_64_linux
+    sha256 cellar: :any_skip_relocation, sierra:       "0f0d3d53c06ddbb56ad38f6263a49d0fd52b3aed7e99225a8dc286ce2857f157"
+    sha256 cellar: :any_skip_relocation, x86_64_linux: "3f79f6279f053a919147c2c6625a3ecbaafaf0e5e14afd0aa881bf3b80bb934e"
   end
 
   def install

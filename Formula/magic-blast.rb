@@ -1,5 +1,5 @@
 class MagicBlast < Formula
-  desc "Magic BLAST read mapper"
+  desc "Map RNA or DNA sequencing against a whole genome or transcriptome"
   homepage "https://ncbi.github.io/magicblast/"
   if OS.mac?
     url "ftp://ftp.ncbi.nlm.nih.gov/blast/executables/magicblast/1.3.0/ncbi-magicblast-1.3.0-x64-macosx.tar.gz"
@@ -11,9 +11,8 @@ class MagicBlast < Formula
 
   bottle do
     root_url "https://linuxbrew.bintray.com/bottles-bio"
-    cellar :any_skip_relocation
-    sha256 "234d29db8f7b47403f0cc4ba4823824ed60d72945365dc2bb5de3eb49cb24114" => :sierra_or_later
-    sha256 "e05ba857997f6f75a69d5f423202ae9d99b48a122b3c219c6021f99badbbf07b" => :x86_64_linux
+    sha256 cellar: :any_skip_relocation, sierra:       "234d29db8f7b47403f0cc4ba4823824ed60d72945365dc2bb5de3eb49cb24114"
+    sha256 cellar: :any_skip_relocation, x86_64_linux: "e05ba857997f6f75a69d5f423202ae9d99b48a122b3c219c6021f99badbbf07b"
   end
 
   unless OS.mac?

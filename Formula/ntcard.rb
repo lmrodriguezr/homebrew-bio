@@ -2,22 +2,23 @@ class Ntcard < Formula
   # cite Mohamadi_2017: "https://doi.org/10.1093/bioinformatics/btw832"
   desc "Estimating k-mer coverage histogram of genomics data"
   homepage "https://github.com/bcgsc/ntCard"
-  url "https://github.com/bcgsc/ntCard/archive/1.0.1.tar.gz"
-  sha256 "f3f5969f2bc49a86d045749e49049717032305f5648b26c1be23bb0f8a13854a"
+  url "https://github.com/bcgsc/ntCard/releases/download/1.2.2/ntcard-1.2.2.tar.gz"
+  sha256 "bace4e6da2eb8e59770d38957d1a916844071fb567696994c8605fd5f92b5eea"
+  license "MIT"
+
   head "https://github.com/bcgsc/ntCard"
 
   bottle do
     root_url "https://linuxbrew.bintray.com/bottles-bio"
-    cellar :any
-    sha256 "c2a4975d62ca60e7926dd78831aec208ad55bc77ab1f716c87bbdd541f500110" => :sierra_or_later
-    sha256 "6d1fb4c956d57ae24466c44ace9a9523c3704fe8269e0367dde301a8d73ff422" => :x86_64_linux
+    sha256 cellar: :any, catalina:     "23046c62a90ea7b0eca403f3785270a19044ee2df642edbfbe1c85d1e5b7f8d6"
+    sha256 cellar: :any, x86_64_linux: "f9f148edfccb1d956cc02dcf055fec2cbb1725e7b2fe86d99f1f861fe734e5bb"
   end
-
-  fails_with :clang # needs openmp
 
   depends_on "autoconf" => :build
   depends_on "automake" => :build
-  depends_on "gcc" if OS.mac? # for openmp
+  depends_on "gcc" if OS.mac? # needs openmp
+
+  fails_with :clang # needs openmp
 
   def install
     system "./autogen.sh"

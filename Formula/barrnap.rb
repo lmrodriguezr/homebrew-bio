@@ -1,17 +1,16 @@
 class Barrnap < Formula
   desc "BAsic Rapid Ribosomal RNA Predictor"
   homepage "https://github.com/tseemann/barrnap"
-  url "https://github.com/tseemann/barrnap/archive/0.8.tar.gz"
-  sha256 "82004930767e92b61539c0de27ff837b8b7af01236e565f1473c63668cf0370f"
-  head "https://github.com/tseemann/barrnap.git"
+  url "https://github.com/tseemann/barrnap/archive/0.9.tar.gz"
+  sha256 "36c27cd4350531d98b3b2fb7d294a2d35c15b7365771476456d7873ba33cce15"
 
   bottle do
     root_url "https://linuxbrew.bintray.com/bottles-bio"
-    cellar :any_skip_relocation
-    sha256 "1215c64ca5d2fec2665d0b6167edec78c1a9545a54c2c9bf35c6f531a5d6b5e4" => :sierra_or_later
-    sha256 "bcc05e5b81475bb0982cd741f8e94e854d80333abd994d84a53c7084fa5e5c45" => :x86_64_linux
+    sha256 cellar: :any_skip_relocation, sierra:       "3695f106e600e0bd8f21e8ea70d4eea54cdac6f2c27262ed17306b288605031b"
+    sha256 cellar: :any_skip_relocation, x86_64_linux: "7329922f75852f701922912d413f74820b8c557f40d04b7bb28b6ef057ea46e6"
   end
 
+  depends_on "bedtools"
   depends_on "hmmer"
 
   def install
@@ -22,5 +21,8 @@ class Barrnap < Formula
     assert_match "##gff-version", shell_output("#{bin}/barrnap -q #{prefix}/examples/nohits.fna")
     assert_match "Name=16S_rRNA", shell_output("#{bin}/barrnap -q #{prefix}/examples/small.fna")
     assert_match "Name=16S_rRNA", shell_output("#{bin}/barrnap -q --kingdom mito #{prefix}/examples/mitochondria.fna")
+    out = testpath/"hits.fa"
+    system "#{bin}/barrnap", "--outseq", out, "#{prefix}/examples/small.fna"
+    assert_predicate out, :exist?
   end
 end

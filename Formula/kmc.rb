@@ -2,36 +2,35 @@ class Kmc < Formula
   # cite Deorowicz_2015: "https://doi.org/10.1093/bioinformatics/btv022"
   desc "Fast and frugal disk based k-mer counter"
   homepage "http://sun.aei.polsl.pl/kmc/"
-  url "https://github.com/marekkokot/KMC/archive/v3.0.1.tar.gz"
-  sha256 "0dbc9254f95541a060d94076d2aa03bb57eb2da114895848f65af0db1e4f8b67"
+  url "https://github.com/refresh-bio/KMC/archive/v3.1.1.tar.gz"
+  sha256 "d7cdf37d90a07d1a432b7427436f962914b5f63a1b6dbb9a116609a1c64d1324"
   head "https://github.com/marekkokot/KMC.git"
 
   bottle do
     root_url "https://linuxbrew.bintray.com/bottles-bio"
-    cellar :any_skip_relocation
-    sha256 "3f6989a7acf4d982edd19b96360ece099f288f919c74f4dbf5cd5a59bf295fd9" => :x86_64_linux
+    sha256 cellar: :any_skip_relocation, sierra:       "357369318d5619a941285eca62a1b260ae2d519c4fe27f326b26277d70d97451"
+    sha256 cellar: :any_skip_relocation, x86_64_linux: "a14014ca6943cd93069815a57e40ae2147d01c32e10109b8009e5198ef0aba32"
   end
 
-  # fatal error: 123:10: 'ext/algorithm' file not found
-  depends_on :linux
+  depends_on "gcc"
+  uses_from_macos "bzip2"
+  uses_from_macos "zlib"
 
-  needs :cxx14
+  # Fix error: 'ext/algorithm' file not found
+  fails_with :clang
 
   def install
-    # https://github.com/refresh-bio/KMC/issues/50
-    # g++ --std=c++14 error: 'modf' is not a member of 'std'
-    inreplace "kmc_api/kmer_defs.h", "<math.h>", "<cmath>"
+    args = %W[CC=#{ENV.cxx} KMC_BIN_DIR=#{bin}]
+    args << (OS.mac? ? "-fmakefile_mac" : "-fmakefile")
 
-    # Reduce memory usage below 4 GB for Circle CI.
-    ENV["MAKEFLAGS"] = "-j4" if ENV["CIRCLECI"]
+    system "make", *args, "kmc", "kmc_dump", "kmc_tools"
 
-    system "make", "CC=#{ENV.cxx}", "KMC_BIN_DIR=#{bin}",
-      OS.mac? ? "-fmakefile_mac" : "-fmakefile"
-
-    doc.install "kmc_tools.pdf"
+    doc.install Dir["*.pdf"]
   end
 
   test do
-    assert_match "occurring", shell_output("#{bin}/kmc --help 2>&1")
+    assert_match version.to_s, shell_output("#{bin}/kmc --version 2>&1")
+    assert_match version.to_s, shell_output("#{bin}/kmc_dump --version 2>&1")
+    assert_match version.to_s, shell_output("#{bin}/kmc_tools 2>&1")
   end
 end

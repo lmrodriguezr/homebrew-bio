@@ -2,14 +2,14 @@ class Phyml < Formula
   # cite Guindon_2010: "https://doi.org/10.1093/sysbio/syq010"
   desc "Fast maximum likelihood-based phylogenetic inference"
   homepage "http://www.atgc-montpellier.fr/phyml/"
-  url "https://github.com/stephaneguindon/phyml/archive/v3.3.20180214.tar.gz"
-  sha256 "ec059e3662874be3fdf1a9dc6d71fe4d568d987f66da9495f154f8f49c6d153e"
+  url "https://github.com/stephaneguindon/phyml/archive/v3.3.20200621.tar.gz"
+  sha256 "a8243923ee08c74cab609a4b086ade66c6156fc2b24450e2a500108dc644c867"
+  license "GPL-3.0"
 
   bottle do
     root_url "https://linuxbrew.bintray.com/bottles-bio"
-    cellar :any_skip_relocation
-    sha256 "767f89eff7087e57b5b485cae3326911b10070a4eedced1051325830c1a00b79" => :sierra_or_later
-    sha256 "b600dfae5207edd400f05b8ad45129301fdb50f0522f55687f64a72cad17c6d2" => :x86_64_linux
+    sha256 cellar: :any_skip_relocation, catalina:     "adac7f68bc36a7bd0b4954749d2293af62ea6d9fe91febed13d84f514f089ed9"
+    sha256 cellar: :any_skip_relocation, x86_64_linux: "7253c8ac68f4f24790adc53d49c9030fd0113fe8f33c482375c47874386ce43e"
   end
 
   depends_on "autoconf" => :build

@@ -4,19 +4,19 @@ class Repeatmasker < Formula
   url "http://repeatmasker.org/RepeatMasker-open-4-0-7.tar.gz"
   version "4.0.7"
   sha256 "16faf40e5e2f521146f6692f09561ebef5f6a022feb17031f2ddb3e3aabcf166"
-  revision 2
+  revision 4
 
   bottle do
     root_url "https://linuxbrew.bintray.com/bottles-bio"
-    cellar :any_skip_relocation
-    sha256 "862d3c592bb3f0474ae0183aa8b474f07327a4487c6e7cb6e4dd0c9e8da4cc88" => :sierra_or_later
-    sha256 "c67b04f3a1f906946a45e9e7fd6d0aedc5791400e93bdfd3f2bde30664e393d9" => :x86_64_linux
+    sha256 sierra:       "7fcee4e987b113ca2661261d9e93748dff492004c7e954c50e357026a2701cb7"
+    sha256 x86_64_linux: "eaa8d9c36550b03924859a3ef41a6dfcf5b08b2f8c501e20f07db532026a0d00"
   end
 
   depends_on "blast"
+  depends_on "brewsci/bio/rmblast"
+  depends_on "brewsci/bio/trf"
   depends_on "hmmer"
-  depends_on "rmblast"
-  depends_on "trf"
+
   unless OS.mac?
     depends_on "cpanminus" => :build
     depends_on "perl"
@@ -31,7 +31,7 @@ class Repeatmasker < Formula
       perl = HOMEBREW_PREFIX/"bin/perl"
       ENV["PERL5LIB"] = libexec/"lib/perl5"
       system "cpanm", "--self-contained", "-l", libexec, "Text::Soundex"
-      (bin/"RepeatMasker").write_env_script(libexec/"RepeatMasker", :PERL5LIB => ENV["PERL5LIB"])
+      (bin/"RepeatMasker").write_env_script(libexec/"RepeatMasker", PERL5LIB: ENV["PERL5LIB"])
     end
 
     # Configure RepeatMasker. The prompts are:
@@ -46,7 +46,7 @@ class Repeatmasker < Formula
     # HMMER INSTALLATION PATH Enter path
     # Do you want HMMER to be your default search engine for Repeatmasker?
     # 5. Done
-    (libexec/"config.txt").write <<~EOS
+    (libexec/"configure.input").write <<~EOS
 
       #{perl}
       #{libexec}
@@ -58,28 +58,31 @@ class Repeatmasker < Formula
       #{HOMEBREW_PREFIX}/bin
       N
       5
-      EOS
+    EOS
     Dir.chdir libexec.to_s do
-      system "./configure <config.txt"
+      system "./configure <configure.input"
     end
   end
 
-  def caveats; <<~EOS
-    Congratulations!  RepeatMasker is now ready to use.
-    The program is installed with a minimal repeat library
-    by default.  This library only contains simple, low-complexity,
-    and common artefact ( contaminate ) sequences.  These are
-    adequate for use with your own custom repeat library.  If you
-    plan to search using common species specific repeats you will
-    need to obtain the complete RepeatMasker repeat library from
-    GIRI ( www.girinst.org ) and install it:
-      cd #{libexec}
-      tar zxvf repeatmaskerlibraries-20140131.tar.gz
-      ./configure <config.txt
+  def caveats
+    <<~EOS
+      Congratulations!  RepeatMasker is now ready to use.
+      The program is installed with a minimal repeat library
+      by default.  This library only contains simple, low-complexity,
+      and common artefact ( contaminate ) sequences.  These are
+      adequate for use with your own custom repeat library.  If you
+      plan to search using common species specific repeats you will
+      need to obtain the complete RepeatMasker repeat library from
+      GIRI and install it:
+        Browse to https://www.girinst.org/server/RepBase/
+        Download RepBaseRepeatMaskerEdition-*.tar.gz
+        cd #{libexec}
+        tar zxvf repeatmaskerlibraries-*.tar.gz
+        ./configure <configure.input
 
-    The default aligner is RMBlast. You may reconfigure RepeatMasker
-    by running
-      cd #{libexec} && ./configure
+      The default aligner is RMBlast. You may reconfigure RepeatMasker
+      by running
+        cd #{libexec} && ./configure
     EOS
   end
 

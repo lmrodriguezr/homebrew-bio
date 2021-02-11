@@ -7,21 +7,28 @@ class Sga < Formula
   revision 1
   head "https://github.com/jts/sga.git"
 
+  livecheck do
+    url :stable
+    strategy :github_latest
+  end
+
   bottle do
     root_url "https://linuxbrew.bintray.com/bottles-bio"
-    sha256 "c557433d9f39a90ecdcc0eaccae50f590d1913d79faa23ed5625329ac61c348c" => :sierra_or_later
-    sha256 "7caa32dd5ce43febeffa62f307d35988eaee298b133c3e6f8948a703fa3194e1" => :x86_64_linux
+    sha256 sierra:       "c557433d9f39a90ecdcc0eaccae50f590d1913d79faa23ed5625329ac61c348c"
+    sha256 x86_64_linux: "7caa32dd5ce43febeffa62f307d35988eaee298b133c3e6f8948a703fa3194e1"
   end
 
   depends_on "autoconf" => :build
   depends_on "automake" => :build
   depends_on "google-sparsehash" => :build
   depends_on "bamtools"
-  depends_on "zlib" unless OS.mac?
+
+  uses_from_macos "zlib"
 
   # Fix error: call to 'abs' is ambiguous
+  # https://github.com/jts/sga/pull/148
   patch do
-    url "https://github.com/jts/sga/pull/148.patch?full_index=1"
+    url "https://github.com/jts/sga/commit/ff74c3ee8120eff911e004d09c2fd14142c0fe75.patch?full_index=1"
     sha256 "257de28dec7c8fdfa8029bff0b14fc336f39a40984f8e7fc85903099d64887f0"
   end
 

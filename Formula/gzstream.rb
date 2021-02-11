@@ -7,12 +7,11 @@ class Gzstream < Formula
 
   bottle do
     root_url "https://linuxbrew.bintray.com/bottles-bio"
-    cellar :any_skip_relocation
-    sha256 "146b9e6ac4dc3a12cb0398092f68bfa08fd5cff5166d20bd6c17e22b27214ed4" => :sierra_or_later
-    sha256 "a7f86908d5605d7c9464136a96ae692147e2889f8d4ee56b8ace305bfb799414" => :x86_64_linux
+    sha256 cellar: :any_skip_relocation, sierra:       "146b9e6ac4dc3a12cb0398092f68bfa08fd5cff5166d20bd6c17e22b27214ed4"
+    sha256 cellar: :any_skip_relocation, x86_64_linux: "a7f86908d5605d7c9464136a96ae692147e2889f8d4ee56b8ace305bfb799414"
   end
 
-  depends_on "zlib" unless OS.mac?
+  uses_from_macos "zlib"
 
   def install
     system "make"
@@ -26,6 +25,7 @@ class Gzstream < Formula
   end
 
   test do
-    # test was done above in "make test"
+    assert_predicate include/"gzstream.h", :exist?
+    assert_predicate lib/"libgzstream.a", :exist?
   end
 end

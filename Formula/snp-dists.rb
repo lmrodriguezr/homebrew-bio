@@ -1,22 +1,22 @@
 class SnpDists < Formula
   desc "Pairwise SNP distance matrix from a FASTA sequence alignment"
   homepage "https://github.com/tseemann/snp-dists"
-  url "https://github.com/tseemann/snp-dists/archive/v0.2.tar.gz"
-  sha256 "3deb6feb5d2b8c3588059fdfa14a94440957fe31f9da4f9c0c7e72113f2f52fc"
-  head "https://github.com/tseemann/snp-dists.git"
+  url "https://github.com/tseemann/snp-dists/archive/v0.7.0.tar.gz"
+  sha256 "9f5ae3c48f7c6c59b3132c445fbd6ea9269896a4c588171624adb1a7bb016b57"
+  license "GPL-3.0"
 
   bottle do
     root_url "https://linuxbrew.bintray.com/bottles-bio"
-    cellar :any_skip_relocation
-    sha256 "6f98a2554188f4aa3d8433133d9d3dc192c86e6a61600fe7e3fc80059555694c" => :sierra_or_later
-    sha256 "79b93f15299b2ce98f9fd017130bf1f320f1500fd077036b5e32419cd38d0e74" => :x86_64_linux
+    sha256 cellar: :any_skip_relocation, catalina:     "642483d9173b5996dda4bd9676a99cd6b7e38f80352957bd19fc96be20ccd3ff"
+    sha256 cellar: :any_skip_relocation, x86_64_linux: "1e6bd8de0a2fc72365256c8b7ce8fcb2d3f53a108ecc719f57d417796ea45e5c"
   end
 
-  depends_on "zlib" unless OS.mac?
+  uses_from_macos "zlib"
 
   def install
     exe = "snp-dists"
-    system "make", exe
+    system "make"
+    system "make", "check"
     bin.install exe
     pkgshare.install "test"
   end

@@ -1,29 +1,40 @@
 class Trnascan < Formula
   # cite Lowe_1997: "https://doi.org/10.1093/nar/25.5.0955"
-  desc "Detect tRNA in genome sequence"
-  homepage "http://eddylab.org/software.html"
-  url "http://eddylab.org/software/tRNAscan-SE/tRNAscan-SE.tar.Z"
-  version "1.23"
-  sha256 "843caf3e258a6293300513ddca7eb7dbbd2225e5baae1e5a7bcafd509f6dd550"
+  desc "Search for tRNA genes in genomic sequence"
+  homepage "http://lowelab.ucsc.edu/tRNAscan-SE/"
+  url "http://trna.ucsc.edu/software/trnascan-se-2.0.4.tar.gz"
+  sha256 "d1a68f14ffa48692b1a110c47f9eeb52193eaf4a890d9f81757c321d0b6cea8d"
+  version_scheme 1
 
   bottle do
     root_url "https://linuxbrew.bintray.com/bottles-bio"
-    sha256 "a54b3d2b603962584f862f25c1a385bd38653d1b691df8ece20319e6f0848e27" => :sierra_or_later
-    sha256 "d81fc3713ae3db57312729afa507a2858a9c406107fd130b0a5ada21c7db01b3" => :x86_64_linux
+    sha256 catalina:     "4b9b41b0218c8eca4a3ee120b308e690d26e2b452cafad34ace553287a656b0c"
+    sha256 x86_64_linux: "cd9c6db9ce48711d817ffd2bca2dd6993d60973fb0c80f66f20103060701ca2b"
   end
 
+  depends_on "infernal"
+
   def install
-    system "make", "all", "CFLAGS=-D_POSIX_C_SOURCE=1", "BINDIR=#{bin}", "LIBDIR=#{libexec}"
-    bin.install %w[coves-SE covels-SE eufindtRNA trnascan-1.4 tRNAscan-SE]
-    libexec.install Dir["gcode.*", "*.cm", "*signal"]
-    man1.install "tRNAscan-SE.man" => "tRNAscan-SE.1"
+    # Fix the error: bin/sstofa: No such file or directory
+    ENV.deparallelize
+
+    inreplace "tRNAscan-SE.src", "@bindir@/tRNAscan-SE.conf", "#{prefix}/etc/tRNAscan-SE.conf"
+    inreplace "tRNAscan-SE.conf.src", "infernal_dir: {bin_dir}", "infernal_dir: #{HOMEBREW_PREFIX}/bin"
+
+    system "./configure",
+      "--disable-debug",
+      "--disable-dependency-tracking",
+      "--disable-silent-rules",
+      "--prefix=#{prefix}"
+    system "make", "install"
+
+    (prefix/"etc").install bin/"tRNAscan-SE.conf"
     prefix.install "Demo"
-    (prefix/"Demo").install "testrun.ref"
   end
 
   test do
-    system "#{bin}/tRNAscan-SE", "-d", "-y", "-o", "test.out", "#{prefix}/Demo/F22B7.fa"
-    assert_predicate testpath/"test.out", :exist?
-    assert_equal File.read("test.out"), File.read(prefix/"Demo/testrun.ref")
+    system "#{bin}/tRNAscan-SE", "-b", "test.bed", "#{prefix}/Demo/Example1.fa"
+    assert_predicate testpath/"test.bed", :exist?
+    assert_equal File.read("test.bed"), File.read(prefix/"Demo/Example1-tRNAs.bed")
   end
 end
