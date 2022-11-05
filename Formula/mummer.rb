@@ -7,7 +7,7 @@ class Mummer < Formula
   revision 3
 
   bottle do
-    root_url "https://linuxbrew.bintray.com/bottles-bio"
+    root_url "https://ghcr.io/v2/brewsci/bio"
     sha256 cellar: :any_skip_relocation, sierra:       "2642a41271e0a4d0522c3d1890d1dfc6ced4ad03aa90ba31c37210f0a96a2e41"
     sha256 cellar: :any_skip_relocation, x86_64_linux: "22df96cb1a3e421e5af2e432e3cfc10834ee13fa1e2916aae6a820dbcddcf8c5"
   end
@@ -42,7 +42,7 @@ class Mummer < Formula
       # Skip two tools that do not have a help flag
       next if tools_to_skip.include? tool
 
-      assert_match /U(sage|SAGE)/, pipe_output("#{prefix}/#{tool} -h 2>&1")
+      assert_match(/U(sage|SAGE)/, pipe_output("#{prefix}/#{tool} -h 2>&1"))
     end
   end
 end

@@ -16,7 +16,7 @@ class Trimadap < Formula
   end
 
   bottle do
-    root_url "https://linuxbrew.bintray.com/bottles-bio"
+    root_url "https://ghcr.io/v2/brewsci/bio"
     sha256 cellar: :any_skip_relocation, sierra:       "d55f3e6d04a44e747d1fc0b8b279c44518be18d198ceb746052d02dbb2442d74"
     sha256 cellar: :any_skip_relocation, x86_64_linux: "763804b091eba6b97a3276e73e8c05c761ab5e1836fb2fee9038e08aa0e8096d"
   end
@@ -31,6 +31,6 @@ class Trimadap < Formula
   end
 
   test do
-    assert_match /^1 +ATCTCGTATGCCGTCTTCTGCTTG$/, shell_output("#{bin}/trimadap #{doc}/test.fa 2>&1")
+    assert_match(/^1 +ATCTCGTATGCCGTCTTCTGCTTG$/, shell_output("#{bin}/trimadap #{doc}/test.fa 2>&1"))
   end
 end

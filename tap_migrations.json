@@ -1,5 +1,15 @@
 {
+  "abricate": "homebrew/core",
+  "bbtools": "homebrew/core",
   "beagle": "homebrew/core",
+  "bioperl": "homebrew/core",
+  "jellyfish": "homebrew/core",
+  "kalign": "homebrew/core",
+  "lastz": "homebrew/core",
+  "mrbayes": "homebrew/core",
+  "pymol": "homebrew/core",
   "raxml-ng": "homebrew/core",
+  "sambamba": "homebrew/core",
+  "seqkit": "homebrew/core",
   "vsearch": "homebrew/core"
 }

@@ -1,16 +1,15 @@
 class Arcs < Formula
   # cite Yeo_2017: "https://doi.org/10.1093/bioinformatics/btx675"
-  desc "Scaffold genome sequence assemblies using 10x Genomics data"
+  desc "Scaffold genome sequence assemblies using linked or long reads"
   homepage "https://github.com/bcgsc/arcs"
-  url "https://github.com/bcgsc/arcs/releases/download/v1.1.1/arcs-1.1.1.tar.gz"
-  sha256 "31422b10b57080f7058021d1c0ea6f38d3f255d4d82ca48d50f3f073d8c4792d"
-  license "GPL-3.0"
-  revision 1
+  url "https://github.com/bcgsc/arcs/releases/download/v1.2.3/arcs-1.2.3.tar.gz"
+  sha256 "191c863e4fb556bdbad20e8dfa675cb35e209b9198ab06bb8e7b948d9469a066"
+  license "GPL-3.0-only"
 
   bottle do
-    root_url "https://linuxbrew.bintray.com/bottles-bio"
-    sha256 cellar: :any, catalina:     "d683a22fb63e36d4cbcf11847b9700d85c454a90e77915615bcccae95d0c2475"
-    sha256 cellar: :any, x86_64_linux: "84a56e57a9a1c904361dc2100e279a41f9992b208737061276cce50273df0ff9"
+    root_url "https://ghcr.io/v2/brewsci/bio"
+    sha256 cellar: :any,                 catalina:     "320d8b7397b75cbaeb3432f4ce1d887e411cb7c65d4930fa9eb120b69ce33ef9"
+    sha256 cellar: :any_skip_relocation, x86_64_linux: "3bd8cffcd05ac8c85e486b7c4f782c748de79df5d2feed438a82dc49cb25cf76"
   end
 
   head do
@@ -25,12 +24,15 @@ class Arcs < Formula
   uses_from_macos "zlib"
 
   on_macos do
-    depends_on "gcc@9" # needs openmp
+    depends_on "libomp"
   end
 
-  fails_with :clang # needs openmp
-
   def install
+    if OS.mac?
+      ENV.append "LDFLAGS", "-L#{Formula["libomp"].opt_lib} -lomp"
+      ENV.append "CPPFLAGS", "-I#{HOMEBREW_PREFIX}/include -Xpreprocessor -fopenmp -lomp"
+    end
+
     system "./autogen.sh" if build.head?
     system "./configure",
       "--disable-dependency-tracking",
@@ -38,9 +40,17 @@ class Arcs < Formula
       "--prefix=#{prefix}",
       "--with-boost=#{Formula["boost"].opt_include}"
     system "make", "install"
+    libexec_src = Pathname.new("#{libexec}/bin/src")
+    libexec_src.install "src/long-to-linked-pe"
+    libexec_bin = Pathname.new("#{libexec}/bin/Examples")
+    libexec_bin.install "Examples/makeTSVfile.py"
+    libexec_bin.install "Examples/arcs-make"
+    (bin/"arcs-make").write_env_script libexec/"bin/Examples/arcs-make", PYTHONPATH: ENV["PYTHONPATH"]
   end
 
   test do
     assert_match "Usage", shell_output("#{bin}/arcs --help")
+    assert_match "Usage", shell_output("#{bin}/long-to-linked-pe --help 2>&1")
+    assert_match "Usage", shell_output("#{bin}/arcs-make help")
   end
 end

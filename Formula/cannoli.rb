@@ -1,8 +1,8 @@
 class Cannoli < Formula
   desc "Big Data Genomics ADAM Pipe API wrappers for bioinformatics tools"
   homepage "https://github.com/bigdatagenomics/cannoli"
-  url "https://search.maven.org/remotecontent?filepath=org/bdgenomics/cannoli/cannoli-distribution-spark3_2.12/0.11.1/cannoli-distribution-spark3_2.12-0.11.1-bin.tar.gz"
-  sha256 "a41f6ad894964698e28e9e22dfdfea84ef2a13dabeb38101092265d4b3ba0017"
+  url "https://search.maven.org/remotecontent?filepath=org/bdgenomics/cannoli/cannoli-distribution-spark3_2.12/1.0/cannoli-distribution-spark3_2.12-1.0-bin.tar.gz"
+  sha256 "28c076ebd64278c07e9169e5b5de13ea5fd30a1f68daffbe551518092089ef6a"
 
   livecheck do
     url :homepage
@@ -11,9 +11,9 @@ class Cannoli < Formula
   end
 
   bottle do
-    root_url "https://linuxbrew.bintray.com/bottles-bio"
-    sha256 cellar: :any_skip_relocation, catalina:     "716924507f69a2d5d0fa8b08e4b5434f78a3c99e70f8ef6fa0b3c1905569d23f"
-    sha256 cellar: :any_skip_relocation, x86_64_linux: "d080c149240aa7b000cc4b1e047a3850f86b48caf751f32ff445ee9ee5cb55ff"
+    root_url "https://ghcr.io/v2/brewsci/bio"
+    sha256 cellar: :any_skip_relocation, catalina:     "530dd9be88e1588b7f98d12c6b17dcc02a6f55f1d4524132816b8d74e83de87b"
+    sha256 cellar: :any_skip_relocation, x86_64_linux: "dca0f646dd3c1bc9dffb5350327f66527176794cb4eeb849dec6ad5b33fa5f1e"
   end
 
   head do

@@ -1,43 +1,52 @@
 class Dssp < Formula
   # cite Touw_2015: "https://doi.org/10.1093/nar/gku1028"
   # cite Kabsch_1983: "https://doi.org/10.1002/bip.360221211"
-  desc "Create DSSP files"
-  homepage "https://github.com/cmbi/dssp"
-  url "https://github.com/cmbi/dssp/archive/3.1.4.tar.gz"
-  sha256 "496282b4b5defc55d111190ab9f1b615a9574a2f090e7cf5444521c747b272d4"
+  desc "Assign secondary structure to proteins"
+  homepage "https://github.com/PDB-REDO/dssp"
+  url "https://github.com/PDB-REDO/dssp/archive/refs/tags/v4.0.5.tar.gz"
+  sha256 "759f8fd32c57dfc7c3eed5535d3bc04db13f7de1a5deda8862cebfafcbca84b0"
+  license "BSD-2-Clause"
+  head "https://github.com/PDB-REDO/dssp.git", branch: "trunk"
 
   bottle do
-    root_url "https://linuxbrew.bintray.com/bottles-bio"
-    sha256 cellar: :any, catalina:     "6ebb2d6959f7db323d0645e964ccdbc20a666bf9579aea4673291f06ed3ace82"
-    sha256 cellar: :any, x86_64_linux: "f838bdac491bd122ee73017146a2840f0ddcd450b38e9ac72c158365aa1e9a73"
+    root_url "https://ghcr.io/v2/brewsci/bio"
+    sha256 big_sur:      "d8a65bc59e75ee3d3dc5a93ff3340bfbab41bc67a2807f5740b64094cdbcb8d4"
+    sha256 x86_64_linux: "672a1047263ff4d0e014a857dff17698138d3e5fc77c2bdc865c77ea1e90a1f0"
   end
 
-  depends_on "autoconf" => :build
-  depends_on "automake" => :build
+  depends_on "cmake" => :build
   depends_on "boost"
-
+  depends_on "icu4c"
   uses_from_macos "bzip2"
+  uses_from_macos "zlib"
 
-  resource "pdb" do
-    url "https://files.rcsb.org/download/3ZZZ.pdb.gz"
-    sha256 "9c3dfd81b7bf2f991f69dd1de0df5ea16eaa6d050409b65bfbe2d1a5ad44c11a"
+  resource "libcifpp" do
+    url "https://github.com/PDB-REDO/libcifpp/archive/refs/tags/v4.2.2.tar.gz"
+    sha256 "458050db52416866033b5557939bc9221bce84f9ffe95cfe1680548db9b2ba39"
   end
 
-  # This formula does not contain libzeep.
-  # If libzeep is not detected, then `mkhssp --fetch-dbrefs` is disabled.
-  def install
-    system "./autogen.sh"
-    system "./configure", "--prefix=#{prefix}",
-           "--with-boost=#{Formula["boost"].opt_prefix}"
+  resource "testdata" do
+    url "https://github.com/PDB-REDO/dssp/raw/fa880e3d88f842703f680185fffc4de540284b25/test/1cbs.cif.gz"
+    sha256 "c6a2e4716f843bd608c06cfa4b6a369a56a6021ae16e5f876237b8a73d0dcb5e"
+  end
 
-    system "make"
-    system "make", "install"
+  def install
+    resource("libcifpp").stage do
+      # libcifpp should be installed in 'prefix' directory since the path of dic files are always required.
+      system "cmake", "-S", ".", "-B", "build", *std_cmake_args(install_prefix: prefix/"libcifpp")
+      system "cmake", "--build", "build"
+      system "cmake", "--install", "build"
+    end
+
+    system "cmake", "-S", ".", "-B", "build", *std_cmake_args, "-Dcifpp_DIR=#{prefix/"libcifpp/lib/cmake/cifpp"}"
+    system "cmake", "--build", "build"
+    system "cmake", "--install", "build"
   end
 
   test do
-    resource("pdb").stage do
-      system bin/"mkdssp", "-i", "3zzz.pdb", "-o", testpath/"test.dssp"
-    end
-    assert_match "POLYPYRIMIDINE", (testpath/"test.dssp").read
+    resource("testdata").unpack testpath
+    cp Dir[pkgshare/"*.dic"], testpath
+    system bin/"mkdssp", "-i", "1cbs.cif", "-o", "test.dssp"
+    assert_match "CELLULAR RETINOIC ACID BINDING PROTEIN TYPE II", (testpath/"test.dssp").read
   end
 end

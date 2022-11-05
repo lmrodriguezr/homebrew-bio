@@ -2,32 +2,40 @@ class Vcflib < Formula
   desc "Command-line tools for manipulating VCF files"
   homepage "https://github.com/ekg/vcflib"
   url "https://github.com/ekg/vcflib.git",
-    tag: "v1.0.1", revision: "d150a89fa4f717634b06e1c78a37794d2c10c94c"
+    tag: "v1.0.3", revision: "6ba0d27ff6ba8380f3d92fcfd07bd847a751d705"
 
   bottle do
-    root_url "https://linuxbrew.bintray.com/bottles-bio"
-    sha256 cellar: :any_skip_relocation, sierra:       "0a7dd127083d4e4515cbd3ed38bd5cc5bdc693e0f1fd1bb3266bf0e17e04922d"
-    sha256 cellar: :any_skip_relocation, x86_64_linux: "f10f5737f8ecb6bf5ba530d10a86bb7576843c7e49f401c6018e660cf8027001"
+    root_url "https://ghcr.io/v2/brewsci/bio"
+    sha256 cellar: :any,                 catalina:     "b5cb4439fd442391b5339b3cf5ae3cca87edd3443a5e28a0708c7a9dbc91e1cd"
+    sha256 cellar: :any_skip_relocation, x86_64_linux: "47f04c252cb344b3debdfdf8b65e0db0a086d18f4f3437514078579b48251000"
   end
 
-  depends_on "gcc" if OS.mac?
+  depends_on "cmake" => :build
+  depends_on "pkg-config" => :build
+
+  depends_on "htslib"
   depends_on "python"
+  depends_on "tabixpp"
   depends_on "xz"
 
   uses_from_macos "bzip2"
   uses_from_macos "perl"
   uses_from_macos "zlib"
 
-  fails_with :clang # error: ordered comparison between pointer and zero
-
   def install
-    system "make"
-    pkgshare.install Dir["bin/*.R"]
-    pkgshare.install Dir["bin/*.r"]
-    rm Dir["bin/*.R"]
-    rm Dir["bin/*.r"]
-    bin.install Dir["bin/*"]
-    bin.install "fastahack/fastahack"
+    mkdir "build" do
+      system "cmake", "..", *std_cmake_args, "-DHTSLIB_LOCAL:BOOL=FALSE"
+      system "make"
+      system "make", "install"
+    end
+
+    pkgshare.install Dir["scripts/*.R"]
+    pkgshare.install Dir["scripts/*.r"]
+    rm Dir["scripts/*.R"]
+    rm Dir["scripts/*.r"]
+    bin.install Dir["scripts/*"]
+
+    mv prefix/"man", share
     pkgshare.install "samples"
   end
 
